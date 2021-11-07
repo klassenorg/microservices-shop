@@ -20,19 +20,21 @@ import (
 func Run() {
 	log.Init()
 	logger := log.NewLogger()
+	defer logger.Sync()
 	logger.Info("logger initialized")
 
 	cfg := config.Init()
 	logger.Info("config initialized")
 
-
 	mongoClient, err := mongodb.NewClient(cfg.MongoTimeout, cfg.MongoURI, cfg.MongoUser, cfg.MongoPassword)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	logger.Info("database initialized")
 
 	db := mongoClient.Database(cfg.MongoDBName)
+	logger.Infow("database initialized",
+		"uri", cfg.MongoURI,
+		"dbName", cfg.MongoDBName)
 
 	repos := repository.NewRepositories(db)
 
@@ -50,7 +52,8 @@ func Run() {
 		}
 	}()
 
-	logger.Info("server started")
+	logger.Infow("server started",
+		"port", cfg.Port)
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
@@ -71,5 +74,3 @@ func Run() {
 		logger.Error(err.Error())
 	}
 }
-
-

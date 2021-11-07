@@ -1,7 +1,9 @@
 package v1
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	"strconv"
 )
@@ -29,12 +31,18 @@ func (h *Handler) getProductByID(c *gin.Context) {
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
+
 		h.newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	product, err := h.services.Products.GetByID(c.Request.Context(), id)
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			h.newErrorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
 		h.newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}

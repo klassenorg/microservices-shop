@@ -1,6 +1,6 @@
 # Catalog service
 
-##Settings
+## Settings
 Set env variables(defaults in examples):
 ```env
 PORT=8081
@@ -14,7 +14,7 @@ MONGO_USER=
 MONGO_PASSWORD=
 MONGO_DB_NAME=catalog
 ```
-##Available endpoints
+## Available endpoints
 
 GET /catalog/v1/products/ - 200/500
 

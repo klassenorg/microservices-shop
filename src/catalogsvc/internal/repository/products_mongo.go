@@ -19,7 +19,7 @@ func (p ProductsRepo) GetAll(ctx context.Context) ([]domain.Product, error) {
 		return nil, err
 	}
 
-	for cur.Next(ctx){
+	for cur.Next(ctx) {
 		var res domain.Product
 		if err := cur.Decode(&res); err != nil {
 			return nil, err
@@ -32,7 +32,7 @@ func (p ProductsRepo) GetAll(ctx context.Context) ([]domain.Product, error) {
 
 func (p ProductsRepo) GetByID(ctx context.Context, id int) (domain.Product, error) {
 	var product domain.Product
-	err := p.db.FindOne(ctx, bson.M{"id":id}).Decode(&product)
+	err := p.db.FindOne(ctx, bson.M{"id": id}).Decode(&product)
 
 	return product, err
 }
@@ -40,5 +40,3 @@ func (p ProductsRepo) GetByID(ctx context.Context, id int) (domain.Product, erro
 func NewProductsRepo(db *mongo.Database) *ProductsRepo {
 	return &ProductsRepo{db: db.Collection(productsCollection)}
 }
-
-

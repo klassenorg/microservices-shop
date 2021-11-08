@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = "./proto";
+
+package microservicesshop;
+
+message Empty {}
+
+//----------Catalog service----------
+service CatalogService {
+  rpc GetAllProducts(Empty) returns (Products) {}
+  rpc GetProductByID(GetProductByIDRequest) returns (Product) {}
+}
+
+message Product {
+  uint32 id = 1;
+  string name = 2;
+  string description = 3;
+  uint32 price = 4;
+  string image_path = 5;
+}
+
+message Products {
+  repeated Product products = 1;
+}
+
+message GetProductByIDRequest {
+  uint32 id = 1;
+}

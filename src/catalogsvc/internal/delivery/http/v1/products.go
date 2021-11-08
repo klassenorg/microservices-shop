@@ -32,14 +32,14 @@ func (h *Handler) getProductByID(c *gin.Context) {
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
 
-		h.newErrorResponse(c, http.StatusBadRequest, err.Error())
+		h.newBadRequestResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	product, err := h.services.Products.GetByID(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			h.newErrorResponse(c, http.StatusNotFound, err.Error())
+			h.newBadRequestResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
 

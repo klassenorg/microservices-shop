@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-
 func NewClient(timeout time.Duration, uri, username, password string) (*mongo.Client, error) {
 	opts := options.Client().ApplyURI(uri)
 	if username != "" && password != "" {

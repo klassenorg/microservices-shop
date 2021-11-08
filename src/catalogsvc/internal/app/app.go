@@ -2,6 +2,7 @@ package app
 
 import (
 	"catalogsvc/internal/config"
+	grpcDelivery "catalogsvc/internal/delivery/grpc"
 	httpDelivery "catalogsvc/internal/delivery/http"
 	"catalogsvc/internal/repository"
 	"catalogsvc/internal/server"
@@ -10,6 +11,7 @@ import (
 	log "catalogsvc/pkg/logger"
 	"context"
 	"errors"
+	"google.golang.org/grpc"
 	"net/http"
 	"os"
 	"os/signal"
@@ -20,7 +22,9 @@ import (
 func Run() {
 	log.Init()
 	logger := log.NewLogger()
-	defer logger.Sync()
+	defer func(logger *log.Logger) {
+		_ = logger.Sync()
+	}(logger)
 	logger.Info("logger initialized")
 
 	cfg := config.Init()
@@ -44,16 +48,32 @@ func Run() {
 
 	handlers := httpDelivery.NewHandler(services, logger)
 
+	grpcHandlers := grpcDelivery.NewHandler(services, logger)
+
+	grpcSrv, err := server.NewGRPCServer(cfg, grpcHandlers)
+	if err != nil {
+		logger.Errorf("error starting GRPC server: %s\n", err.Error())
+	}
+
+	go func() {
+		if err := grpcSrv.Run(); !errors.Is(err, grpc.ErrServerStopped) {
+			logger.Errorf("error occurried while running grpc server: %s\n", err.Error())
+		}
+	}()
+
+	logger.Infow("grpc server started",
+		"port", cfg.GRPCPort)
+
 	srv := server.NewServer(cfg, handlers.Init())
 
 	go func() {
 		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
-			logger.Errorf("error occurred while running http server: %s\n", err.Error())
+			logger.Errorf("error occurried while running http server: %s\n", err.Error())
 		}
 	}()
 
-	logger.Infow("server started",
-		"port", cfg.Port)
+	logger.Infow("http server started",
+		"port", cfg.HTTPPort)
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
@@ -65,6 +85,8 @@ func Run() {
 
 	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
 	defer shutdown()
+
+	grpcSrv.Stop()
 
 	if err := srv.Stop(ctx); err != nil {
 		logger.Errorf("failed to stop server: %v", err)

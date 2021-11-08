@@ -16,6 +16,9 @@ MONGO_DB_NAME=catalog
 ```
 ## Available endpoints
 
-GET /catalog/v1/products/ - 200/500
 
-GET /catalog/v1/products/:id -- 200/400/500
+* GET /catalog/v1/products/ - 200/500\n
+  * rpc GetAllProducts(Empty) returns (Products) {}
+
+* GET /catalog/v1/products/:id -- 200/400/500 
+  * rpc GetProductByID(GetProductByIDRequest) returns (Product) {}

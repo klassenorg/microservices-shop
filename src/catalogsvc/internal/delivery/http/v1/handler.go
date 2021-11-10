@@ -3,6 +3,7 @@ package v1
 import (
 	"catalogsvc/internal/service"
 	"catalogsvc/pkg/logger"
+
 	"github.com/gin-gonic/gin"
 )
 

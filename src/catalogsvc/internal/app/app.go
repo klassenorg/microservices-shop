@@ -15,8 +15,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
+
+	_ "net/http/pprof"
 )
 
 func Run() {
@@ -56,10 +59,20 @@ func Run() {
 	}
 
 	go func() {
-		if err := grpcSrv.Run(); !errors.Is(err, grpc.ErrServerStopped) {
+		if err := grpcSrv.Run(); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
 			logger.Errorf("error occurried while running grpc server: %s\n", err.Error())
 		}
 	}()
+
+	//pprof server
+	if cfg.Debug {
+		go func() {
+			runtime.SetBlockProfileRate(1)
+			if err := http.ListenAndServe(":8888", nil); !errors.Is(err, http.ErrServerClosed) {
+				logger.Errorf("error ocurried while running hprof server: %s\n", err.Error())
+			}
+		}()
+	}
 
 	logger.Infow("grpc server started",
 		"port", cfg.GRPCPort)
@@ -67,7 +80,7 @@ func Run() {
 	srv := server.NewServer(cfg, handlers.Init())
 
 	go func() {
-		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
+		if err := srv.Run(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logger.Errorf("error occurried while running http server: %s\n", err.Error())
 		}
 	}()
@@ -78,6 +91,8 @@ func Run() {
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
+	logger.Info("service started successfully")
 
 	<-quit
 
@@ -95,4 +110,6 @@ func Run() {
 	if err := mongoClient.Disconnect(context.Background()); err != nil {
 		logger.Error(err.Error())
 	}
+
+	logger.Info("service stopped successfully")
 }

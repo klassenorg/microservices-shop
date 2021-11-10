@@ -9,6 +9,7 @@ require (
 	go.mongodb.org/mongo-driver v1.7.4
 	go.uber.org/zap v1.19.1
 	google.golang.org/grpc v1.42.0
+	google.golang.org/protobuf v1.25.0
 )
 
 require (
@@ -41,7 +42,6 @@ require (
 	golang.org/x/sys v0.0.0-20211106132015-ebca88c72f68 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
-	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )

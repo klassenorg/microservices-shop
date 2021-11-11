@@ -6,7 +6,8 @@ import (
 )
 
 type Config struct {
-	Debug bool `yaml:"debug" env:"DEBUG_ENABLED" env-default:"true"`
+	Debug          bool   `yaml:"debug" env:"DEBUG_ENABLED" env-default:"true"`
+	DebugPprofPort string `yaml:"debug_Pprof_port" env:"DEBUG_PPROF_PORT" env-default:"8881"`
 
 	HTTPPort     string        `yaml:"http_port" env:"HTTP_PORT" env-default:"8081"`
 	ReadTimeout  time.Duration `yaml:"read_timeout" env:"READ_TIMEOUT" env-default:"30s"`

@@ -9,7 +9,7 @@ run: build
 	./.bin/app
 
 proto:
-	rm -rf gen/proto && mkdir gen/proto && protoc -I=../../proto/ --go_out=gen/ --go-grpc_out=gen/ ../../proto/shop.proto
+	rm -rf gen/proto && mkdir -p gen/proto && protoc -I=../../proto/ --go_out=gen/ --go-grpc_out=gen/ ../../proto/shop.proto
 
 lint:
 	golangci-lint run

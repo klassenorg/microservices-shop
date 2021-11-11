@@ -11,6 +11,7 @@ import (
 	log "catalogsvc/pkg/logger"
 	"context"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"net/http"
 	"os"
@@ -32,6 +33,22 @@ func Run() {
 
 	cfg := config.Init()
 	logger.Info("config initialized")
+
+	if !cfg.Debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
+	//pprof server
+	if cfg.Debug {
+		go func() {
+			runtime.SetBlockProfileRate(1)
+			if err := http.ListenAndServe(":"+cfg.DebugPprofPort, nil); !errors.Is(err, http.ErrServerClosed) {
+				logger.Errorf("error ocurried while running hprof server: %s\n", err.Error())
+			}
+		}()
+		logger.Infow("hprof server started",
+			"port", cfg.DebugPprofPort)
+	}
 
 	mongoClient, err := mongodb.NewClient(cfg.MongoTimeout, cfg.MongoURI, cfg.MongoUser, cfg.MongoPassword)
 	if err != nil {
@@ -63,16 +80,6 @@ func Run() {
 			logger.Errorf("error occurried while running grpc server: %s\n", err.Error())
 		}
 	}()
-
-	//pprof server
-	if cfg.Debug {
-		go func() {
-			runtime.SetBlockProfileRate(1)
-			if err := http.ListenAndServe(":8888", nil); !errors.Is(err, http.ErrServerClosed) {
-				logger.Errorf("error ocurried while running hprof server: %s\n", err.Error())
-			}
-		}()
-	}
 
 	logger.Infow("grpc server started",
 		"port", cfg.GRPCPort)

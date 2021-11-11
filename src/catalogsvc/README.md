@@ -3,6 +3,9 @@
 ## Settings
 Set env variables(defaults in examples):
 ```env
+DEBUG=true
+DEBUG_PPROF_PORT=8881
+
 PORT=8081
 READ_TIMEOUT=30s
 WRITE_TIMEOUT=30s

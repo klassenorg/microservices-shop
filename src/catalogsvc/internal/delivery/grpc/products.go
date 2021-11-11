@@ -11,7 +11,7 @@ func (h *Handler) GetAllProducts(ctx context.Context, _ *pb.Empty) (*pb.Products
 		h.logger.Errorw("error getting products",
 			"grpc", true,
 			"error", err)
-		return nil, err
+		return &pb.Products{}, err
 	}
 
 	out := make([]*pb.Product, 0, len(products))
@@ -36,7 +36,7 @@ func (h *Handler) GetProductByID(ctx context.Context, req *pb.GetProductByIDRequ
 			"grpc", true,
 			"id", req.Id,
 			"error", err)
-		return nil, err
+		return &pb.Product{}, err
 	}
 
 	return &pb.Product{

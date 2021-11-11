@@ -1,0 +1,38 @@
+### With count
+POST http://localhost:8082/cart/v1/add
+Content-Type: application/json
+Cookie: USER_ID=1234
+
+{
+  "product_id": "1",
+  "count": 10
+}
+
+### Without count
+POST http://localhost:8082/cart/v1/add
+Content-Type: application/json
+Cookie: USER_ID=1234
+
+{
+  "product_id": "2"
+}
+
+### Remove with count
+POST http://localhost:8082/cart/v1/remove
+Content-Type: application/json
+Cookie: USER_ID=1234
+
+{
+  "product_id": "1",
+  "count": 10
+}
+
+### Check total
+GET http://localhost:8082/cart/v1
+Content-Type: application/json
+Cookie: USER_ID=1234
+
+### Remove all
+POST http://localhost:8082/cart/v1/remove/all
+Content-Type: application/json
+Cookie: USER_ID=1234

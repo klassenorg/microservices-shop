@@ -6,7 +6,7 @@ import (
 )
 
 func (h *Handler) GetAllProducts(ctx context.Context, _ *pb.Empty) (*pb.Products, error) {
-	products, err := h.services.Products.GetAll(ctx)
+	products, err := h.services.Products.GetAllProducts(ctx)
 	if err != nil {
 		h.logger.Errorw("error getting products",
 			"grpc", true,
@@ -30,7 +30,7 @@ func (h *Handler) GetAllProducts(ctx context.Context, _ *pb.Empty) (*pb.Products
 }
 
 func (h *Handler) GetProductByID(ctx context.Context, req *pb.GetProductByIDRequest) (*pb.Product, error) {
-	product, err := h.services.Products.GetByID(ctx, int(req.Id))
+	product, err := h.services.Products.GetProductByID(ctx, int(req.Id))
 	if err != nil {
 		h.logger.Errorw("error getting product by id",
 			"grpc", true,

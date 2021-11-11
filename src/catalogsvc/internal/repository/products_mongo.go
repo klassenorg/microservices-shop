@@ -11,7 +11,7 @@ type ProductsRepo struct {
 	db *mongo.Collection
 }
 
-func (p ProductsRepo) GetAll(ctx context.Context) ([]domain.Product, error) {
+func (p *ProductsRepo) GetAll(ctx context.Context) ([]domain.Product, error) {
 	products := make([]domain.Product, 0, 12)
 
 	cur, err := p.db.Find(ctx, bson.M{})
@@ -30,7 +30,7 @@ func (p ProductsRepo) GetAll(ctx context.Context) ([]domain.Product, error) {
 	return products, nil
 }
 
-func (p ProductsRepo) GetByID(ctx context.Context, id int) (domain.Product, error) {
+func (p *ProductsRepo) GetByID(ctx context.Context, id int) (domain.Product, error) {
 	var product domain.Product
 	err := p.db.FindOne(ctx, bson.M{"id": id}).Decode(&product)
 

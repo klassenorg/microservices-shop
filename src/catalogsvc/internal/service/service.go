@@ -7,8 +7,8 @@ import (
 )
 
 type Products interface {
-	GetAll(ctx context.Context) ([]domain.Product, error)
-	GetByID(ctx context.Context, id int) (domain.Product, error)
+	GetAllProducts(ctx context.Context) ([]domain.Product, error)
+	GetProductByID(ctx context.Context, id int) (domain.Product, error)
 }
 
 type Services struct {

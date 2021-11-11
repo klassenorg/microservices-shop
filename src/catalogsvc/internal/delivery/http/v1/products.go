@@ -17,7 +17,7 @@ func (h *Handler) initProductsRoutes(api *gin.RouterGroup) {
 }
 
 func (h *Handler) getAllProducts(c *gin.Context) {
-	products, err := h.services.Products.GetAll(c.Request.Context())
+	products, err := h.services.Products.GetAllProducts(c.Request.Context())
 	if err != nil {
 		h.newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -36,7 +36,7 @@ func (h *Handler) getProductByID(c *gin.Context) {
 		return
 	}
 
-	product, err := h.services.Products.GetByID(c.Request.Context(), id)
+	product, err := h.services.Products.GetProductByID(c.Request.Context(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			h.newBadRequestResponse(c, http.StatusNotFound, err.Error())

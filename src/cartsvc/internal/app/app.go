@@ -2,6 +2,7 @@ package app
 
 import (
 	"cartsvc/internal/config"
+	grpcDelivery "cartsvc/internal/delivery/grpc"
 	httpDelivery "cartsvc/internal/delivery/http"
 	"cartsvc/internal/repository"
 	"cartsvc/internal/server"
@@ -10,9 +11,12 @@ import (
 	log "cartsvc/pkg/logger"
 	"context"
 	"errors"
+	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
 )
@@ -28,6 +32,18 @@ func Run() {
 	cfg := config.Init()
 	logger.Info("config initialized")
 
+	//pprof server
+	if cfg.Debug {
+		go func() {
+			runtime.SetBlockProfileRate(1)
+			if err := http.ListenAndServe(":"+cfg.DebugPprofPort, nil); !errors.Is(err, http.ErrServerClosed) {
+				logger.Errorf("error ocurried while running hprof server: %s\n", err.Error())
+			}
+		}()
+		logger.Infow("hprof server started",
+			"port", cfg.DebugPprofPort)
+	}
+
 	redisClient, err := redisdb.NewClient(cfg.RedisAddr, cfg.RedisPassword, cfg.RedisTimeout)
 	if err != nil {
 		logger.Fatal(err)
@@ -41,7 +57,27 @@ func Run() {
 		Repos: repos,
 	})
 
+	if !cfg.Debug {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	handlers := httpDelivery.NewHandler(services, logger)
+
+	grpcHandlers := grpcDelivery.NewHandler(services, logger)
+
+	grpcSrv, err := server.NewGRPCServer(cfg, grpcHandlers)
+	if err != nil {
+		logger.Errorf("error starting GRPC server: %s\n", err.Error())
+	}
+
+	go func() {
+		if err := grpcSrv.Run(); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			logger.Errorf("error occurried while running grpc server: %s\n", err.Error())
+		}
+	}()
+
+	logger.Infow("grpc server started",
+		"port", cfg.GRPCPort)
 
 	srv := server.NewServer(cfg, handlers.Init())
 
@@ -66,6 +102,8 @@ func Run() {
 
 	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
 	defer shutdown()
+
+	grpcSrv.Stop()
 
 	if err := srv.Stop(ctx); err != nil {
 		logger.Errorf("failed to stop server: %v", err)

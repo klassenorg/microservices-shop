@@ -27,3 +27,25 @@ message Products {
 message GetProductByIDRequest {
   uint32 id = 1;
 }
+
+//----------Cart service----------
+service CartService {
+  rpc GetCart(CartRequest) returns (CartResponse) {}
+  rpc AddToCart(CartUpdateRequest) returns (Empty) {}
+  rpc RemoveFromCart(CartUpdateRequest) returns (Empty) {}
+  rpc RemoveAllFromCart(CartRequest) returns (Empty) {}
+}
+
+message CartRequest {
+  string id = 1;
+}
+
+message CartResponse {
+  map<string, string> cart = 1;
+}
+
+message CartUpdateRequest {
+  string user_id = 1;
+  string product_id = 2;
+  uint32 count = 3;
+}

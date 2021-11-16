@@ -19,12 +19,8 @@ func (p *ProductsRepo) GetAll(ctx context.Context) ([]domain.Product, error) {
 		return nil, err
 	}
 
-	for cur.Next(ctx) {
-		var res domain.Product
-		if err := cur.Decode(&res); err != nil {
-			return nil, err
-		}
-		products = append(products, res)
+	if err := cur.All(ctx, &products); err != nil {
+		return nil, err
 	}
 
 	return products, nil

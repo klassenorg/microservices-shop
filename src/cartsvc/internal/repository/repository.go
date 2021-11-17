@@ -5,6 +5,8 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+//go:generate mockgen -source=repository.go -destination=mocks/mock.go
+
 type Repositories struct {
 	Cart Cart
 }

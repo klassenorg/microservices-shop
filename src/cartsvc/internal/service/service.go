@@ -5,6 +5,8 @@ import (
 	"context"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type Cart interface {
 	GetCart(ctx context.Context, id string) (map[string]string, error)
 	AddToCart(ctx context.Context, id string, product string, count int64) error

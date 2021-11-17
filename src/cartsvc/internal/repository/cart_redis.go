@@ -50,6 +50,10 @@ func (c *CartRepo) RemoveAllByID(ctx context.Context, id string) error {
 		return err
 	}
 
+	if len(all) == 0 {
+		return nil
+	}
+
 	keys := make([]string, 0, len(all))
 	for k := range all {
 		keys = append(keys, k)

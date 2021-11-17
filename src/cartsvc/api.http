@@ -4,7 +4,17 @@ Content-Type: application/json
 Cookie: USER_ID=1234
 
 {
-  "product_id": "120202",
+  "product_id": "1",
+  "count": 10
+}
+
+
+### Without cookie
+POST http://localhost:8082/cart/v1/add
+Content-Type: application/json
+
+{
+  "product_id": "1",
   "count": 10
 }
 

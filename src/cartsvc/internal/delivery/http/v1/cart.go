@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -52,10 +53,6 @@ func (h *Handler) addToCart(c *gin.Context) {
 		return
 	}
 
-	if inp.Count <= 0 {
-		inp.Count = 1
-	}
-
 	if err := h.services.Cart.AddToCart(c.Request.Context(), userID, inp.ProductID, inp.Count); err != nil {
 		h.newErrorResponse(c, http.StatusInternalServerError, "internal server error", err)
 		return
@@ -72,12 +69,9 @@ func (h *Handler) removeFromCart(c *gin.Context) {
 		if inp.ProductID == "" {
 			h.newBadRequestResponse(c, http.StatusBadRequest, "empty product_id field")
 		} else {
-			h.newBadRequestResponse(c, http.StatusBadRequest, "error validating request body")
+			h.newBadRequestResponse(c, http.StatusBadRequest, fmt.Sprintf("error validating request body %v", err))
 		}
 		return
-	}
-	if inp.Count <= 0 {
-		inp.Count = 1
 	}
 
 	if err := h.services.Cart.RemoveFromCart(c.Request.Context(), userID, inp.ProductID, inp.Count); err != nil {

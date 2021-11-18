@@ -33,15 +33,7 @@ type cartInput struct {
 }
 
 func (h *Handler) addToCart(c *gin.Context) {
-	userID, err := c.Cookie("USER_ID")
-	if err != nil {
-		h.newBadRequestResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-	if userID == "" {
-		h.newBadRequestResponse(c, http.StatusBadRequest, "empty USER_ID cookie")
-		return
-	}
+	userID, _ := c.Cookie("USER_ID")
 
 	var inp cartInput
 	if err := c.BindJSON(&inp); err != nil {

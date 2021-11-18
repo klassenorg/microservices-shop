@@ -6,6 +6,7 @@ import (
 	mock_service "cartsvc/internal/service/mocks"
 	log "cartsvc/pkg/logger"
 	"context"
+	"errors"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -43,6 +44,8 @@ const (
 var (
 	countString = strconv.FormatInt(count, 10)
 	ctx         = context.Background()
+
+	testError = errors.New("test error")
 )
 
 func TestHandler_GetCart(t *testing.T) {
@@ -64,6 +67,23 @@ func TestHandler_GetCart(t *testing.T) {
 	want := map[string]string{productID: countString}
 
 	assert.Equal(t, want, res.Cart)
+}
+
+func TestHandler_GetCartErr(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cart := mock_service.NewMockCart(ctrl)
+	cart.EXPECT().GetCart(gomock.Any(), userID).Return(map[string]string{}, testError)
+
+	conn, err := getConn(cart)
+	assert.NoError(t, err)
+	defer conn.Close() //nolint:errcheck
+
+	client := pb.NewCartServiceClient(conn)
+
+	req := &pb.CartRequest{Id: userID}
+	_, err = client.GetCart(ctx, req)
+	assert.Error(t, err)
 }
 
 func TestHandler_AddToCart(t *testing.T) {
@@ -88,6 +108,28 @@ func TestHandler_AddToCart(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestHandler_AddToCartErr(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cart := mock_service.NewMockCart(ctrl)
+	cart.EXPECT().AddToCart(gomock.Any(), userID, productID, count).Return(testError)
+
+	conn, err := getConn(cart)
+	assert.NoError(t, err)
+	defer conn.Close() //nolint:errcheck
+
+	client := pb.NewCartServiceClient(conn)
+
+	req := &pb.CartUpdateRequest{
+		UserId:    userID,
+		ProductId: productID,
+		Count:     uint32(count),
+	}
+
+	_, err = client.AddToCart(ctx, req)
+	assert.Error(t, err)
+}
+
 func TestHandler_RemoveFromCart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -110,6 +152,28 @@ func TestHandler_RemoveFromCart(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestHandler_RemoveFromCartErr(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cart := mock_service.NewMockCart(ctrl)
+	cart.EXPECT().RemoveFromCart(gomock.Any(), userID, productID, count).Return(testError)
+
+	conn, err := getConn(cart)
+	assert.NoError(t, err)
+	defer conn.Close() //nolint:errcheck
+
+	client := pb.NewCartServiceClient(conn)
+
+	req := &pb.CartUpdateRequest{
+		UserId:    userID,
+		ProductId: productID,
+		Count:     uint32(count),
+	}
+
+	_, err = client.RemoveFromCart(ctx, req)
+	assert.Error(t, err)
+}
+
 func TestHandler_RemoveAllFromCart(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -126,6 +190,24 @@ func TestHandler_RemoveAllFromCart(t *testing.T) {
 
 	_, err = client.RemoveAllFromCart(ctx, req)
 	assert.NoError(t, err)
+}
+
+func TestHandler_RemoveAllFromCartErr(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cart := mock_service.NewMockCart(ctrl)
+	cart.EXPECT().RemoveAllFromCart(gomock.Any(), userID).Return(testError)
+
+	conn, err := getConn(cart)
+	assert.NoError(t, err)
+	defer conn.Close() //nolint:errcheck
+
+	client := pb.NewCartServiceClient(conn)
+
+	req := &pb.CartRequest{Id: userID}
+
+	_, err = client.RemoveAllFromCart(ctx, req)
+	assert.Error(t, err)
 }
 
 func getConn(cart *mock_service.MockCart) (*grpc.ClientConn, error) {

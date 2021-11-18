@@ -16,9 +16,10 @@ REDIS_PASSWORD=
 
 
 * GET /cart/v1 - 200/500
-
+    * rpc GetCart(CartRequest) returns (CartResponse) {}
 * POST /cart/v1/add -- 200/400/500
-
+    * rpc AddToCart(CartUpdateRequest) returns (Empty) {}
 * POST /cart/v1/remove -- 200/400/500
-
+    * rpc RemoveFromCart(CartUpdateRequest) returns (Empty) {}
 * POST /cart/v1/remove/all -- 200/400/500
+    * rpc RemoveAllFromCart(CartRequest) returns (Empty) {}

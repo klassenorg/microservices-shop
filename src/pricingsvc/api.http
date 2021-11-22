@@ -1,0 +1,9 @@
+### Calculate 1234
+POST http://localhost:8083/pricing/v1/calculate
+Content-Type: application/json
+Cookie: USER_ID=1234
+
+### Calculate 1235
+POST http://localhost:8083/pricing/v1/calculate
+Content-Type: application/json
+Cookie: USER_ID=1235

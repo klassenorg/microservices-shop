@@ -49,3 +49,16 @@ message CartUpdateRequest {
   string product_id = 2;
   uint32 count = 3;
 }
+
+//----------Cart service----------
+service PricingService {
+  rpc Calculate(CalculateRequest) returns (CalculateResponse) {}
+}
+
+message CalculateRequest {
+  string id = 1;
+}
+
+message CalculateResponse {
+  string price = 1;
+}

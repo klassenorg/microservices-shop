@@ -4,8 +4,8 @@ Content-Type: application/json
 Cookie: USER_ID=1234
 
 {
-  "product_id": "1",
-  "count": 10
+  "product_id": "100001",
+  "count": 21
 }
 
 

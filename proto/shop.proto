@@ -28,6 +28,15 @@ message GetProductByIDRequest {
   uint32 id = 1;
 }
 
+//----------Recommendation service----------
+service RecommendationService {
+  rpc GetRecommendations(GetRecommendationsRequest) returns (Products) {}
+}
+
+message GetRecommendationsRequest {
+  uint32 count = 1;
+}
+
 //----------Cart service----------
 service CartService {
   rpc GetCart(CartRequest) returns (CartResponse) {}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"google.golang.org/grpc"
 	pb "pricingsvc/gen/proto"
-	"strconv"
 )
 
 type CatalogClient struct {
@@ -26,18 +25,6 @@ func NewCartClient(addr string) (*CatalogClient, error) {
 
 func (c *CatalogClient) Close() error {
 	return c.conn.Close()
-}
-
-func (c *CatalogClient) GetProductPriceByID(ctx context.Context, id string) (int, error) {
-	idInt, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return -1, err
-	}
-	product, err := c.client.GetProductByID(ctx, &pb.GetProductByIDRequest{Id: uint32(idInt)})
-	if err != nil {
-		return -1, err
-	}
-	return int(product.Price), nil
 }
 
 type Product struct {

@@ -24,7 +24,12 @@ func (p *PricingService) Calculate(ctx context.Context, id string) (int, error) 
 
 	var total int
 	for item, count := range cart {
-		price, err := p.catalogClient.GetProductPriceByID(ctx, item)
+		productID, err := strconv.Atoi(item)
+		if err != nil {
+			return -1, err
+		}
+		product, err := p.catalogClient.GetProductByID(ctx, productID)
+		price := product.Price
 		if err != nil {
 			return -1, err
 		}

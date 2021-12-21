@@ -16,7 +16,6 @@ func (h *Handler) initCartRoutes(api *gin.RouterGroup) {
 
 func (h *Handler) getCart(c *gin.Context) {
 	userID, _ := c.Cookie("USER_ID")
-	h.logger.Debug("getCart method started")
 
 	cart, err := h.services.Cart.GetCart(c.Request.Context(), userID)
 	if err != nil {

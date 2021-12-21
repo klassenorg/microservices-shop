@@ -1,0 +1,18 @@
+POST http://localhost:8085/purchase/v1/
+Content-Type: application/json
+Cookie: USER_ID=1234
+
+{
+  "full_name": "Arthur Klassen",
+  "address": "ul. Pushkina d. Kolotushkina ",
+  "card_number": "1234123412341234",
+  "cvc": "123",
+  "exp": "1234"
+}
+
+###
+//FullName   string `json:"full_name" binding:"required,min=2,max=64"`
+//Address    string `json:"address" binding:"required,min=6"`
+//CardNumber string `json:"card_number" binding:"required,min=16,max=16"`
+//CVC        string `json:"cvc" binding:"required,min=3,max=3"`
+//CardExp    string `json:"exp" binding:"required,min=4,max=4"`

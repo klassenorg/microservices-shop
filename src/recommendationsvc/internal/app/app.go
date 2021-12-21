@@ -46,7 +46,7 @@ func Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func(catalogClient *catalogclient.CatalogClient) {
+	defer func(catalogClient *catalogclient.Client) {
 		err := catalogClient.Close()
 		if err != nil {
 			log.Errorw("error closing catalog client",

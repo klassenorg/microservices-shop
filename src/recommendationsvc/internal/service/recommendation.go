@@ -9,7 +9,7 @@ import (
 )
 
 type RecommendationService struct {
-	catalogClient *catalogclient.CatalogClient
+	catalogClient *catalogclient.Client
 }
 
 func (r *RecommendationService) GetRecommendations(ctx context.Context, count int) ([]domain.Product, error) {
@@ -39,6 +39,6 @@ func (r *RecommendationService) GetRecommendations(ctx context.Context, count in
 	return out, nil
 }
 
-func NewRecommendationService(catalogClient *catalogclient.CatalogClient) *RecommendationService {
+func NewRecommendationService(catalogClient *catalogclient.Client) *RecommendationService {
 	return &RecommendationService{catalogClient: catalogClient}
 }

@@ -1,22 +1,22 @@
 package app
 
 import (
+	"google.golang.org/grpc"
 	"pricingsvc/internal/config"
 	"pricingsvc/pkg/cartclient"
 	"pricingsvc/pkg/catalogclient"
 
-	//grpcDelivery "pricingsvc/internal/delivery/grpc"
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"os"
+	"os/signal"
+	grpcDelivery "pricingsvc/internal/delivery/grpc"
 	httpDelivery "pricingsvc/internal/delivery/http"
 	"pricingsvc/internal/server"
 	"pricingsvc/internal/service"
 	log "pricingsvc/pkg/logger"
-	//"google.golang.org/grpc"
-	"net/http"
-	"os"
-	"os/signal"
 	"runtime"
 	"syscall"
 	"time"
@@ -49,7 +49,7 @@ func Run() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	defer func(cartClient *cartclient.CartClient) {
+	defer func(cartClient *cartclient.Client) {
 		err := cartClient.Close()
 		if err != nil {
 			logger.Errorw("error closing cart client",
@@ -61,7 +61,7 @@ func Run() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	defer func(catalogClient *catalogclient.CatalogClient) {
+	defer func(catalogClient *catalogclient.Client) {
 		err := catalogClient.Close()
 		if err != nil {
 			logger.Errorw("error closing catalog client",
@@ -80,21 +80,18 @@ func Run() {
 
 	handlers := httpDelivery.NewHandler(services, logger)
 
-	//grpcHandlers := grpcDelivery.NewHandler(services, logger)
+	grpcHandlers := grpcDelivery.NewHandler(services, logger)
 
-	//grpcSrv, err := server.NewGRPCServer(cfg, grpcHandlers)
-	//if err != nil {
-	//	logger.Errorf("error starting GRPC server: %s\n", err.Error())
-	//}
-	//
-	//go func() {
-	//	if err := grpcSrv.Run(); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
-	//		logger.Errorf("error occurried while running grpc server: %s\n", err.Error())
-	//	}
-	//}()
-	//
-	//logger.Infow("grpc server started",
-	//	"port", cfg.GRPCPort)
+	grpcSrv, err := server.NewGRPCServer(cfg, grpcHandlers)
+	if err != nil {
+		logger.Errorf("error starting GRPC server: %s\n", err.Error())
+	}
+
+	go func() {
+		if err := grpcSrv.Run(); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			logger.Errorf("error occurried while running grpc server: %s\n", err.Error())
+		}
+	}()
 
 	srv := server.NewServer(cfg, handlers.Init())
 

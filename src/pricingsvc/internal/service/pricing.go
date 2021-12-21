@@ -8,11 +8,11 @@ import (
 )
 
 type PricingService struct {
-	cartClient    *cartclient.CartClient
-	catalogClient *catalogclient.CatalogClient
+	cartClient    *cartclient.Client
+	catalogClient *catalogclient.Client
 }
 
-func NewPricingService(cartClient *cartclient.CartClient, catalogClient *catalogclient.CatalogClient) *PricingService {
+func NewPricingService(cartClient *cartclient.Client, catalogClient *catalogclient.Client) *PricingService {
 	return &PricingService{cartClient: cartClient, catalogClient: catalogClient}
 }
 

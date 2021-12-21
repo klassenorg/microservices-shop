@@ -6,12 +6,12 @@ import (
 	pb "recommendationsvc/gen/proto"
 )
 
-type CatalogClient struct {
+type Client struct {
 	client pb.CatalogServiceClient
 	conn   *grpc.ClientConn
 }
 
-func NewCartClient(addr string) (*CatalogClient, error) {
+func NewCartClient(addr string) (*Client, error) {
 
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
@@ -20,10 +20,10 @@ func NewCartClient(addr string) (*CatalogClient, error) {
 
 	client := pb.NewCatalogServiceClient(conn)
 
-	return &CatalogClient{client: client, conn: conn}, nil
+	return &Client{client: client, conn: conn}, nil
 }
 
-func (c *CatalogClient) Close() error {
+func (c *Client) Close() error {
 	return c.conn.Close()
 }
 
@@ -35,7 +35,7 @@ type Product struct {
 	ImagePath   string `json:"image_path,omitempty" bson:"imagePath,omitempty"`
 }
 
-func (c *CatalogClient) GetAllProducts(ctx context.Context) ([]Product, error) {
+func (c *Client) GetAllProducts(ctx context.Context) ([]Product, error) {
 	res, err := c.client.GetAllProducts(ctx, &pb.Empty{})
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (c *CatalogClient) GetAllProducts(ctx context.Context) ([]Product, error) {
 	return out, nil
 }
 
-func (c *CatalogClient) GetProductByID(ctx context.Context, id int) (*Product, error) {
+func (c *Client) GetProductByID(ctx context.Context, id int) (*Product, error) {
 	res, err := c.client.GetProductByID(ctx, &pb.GetProductByIDRequest{Id: uint32(id)})
 	if err != nil {
 		return nil, err

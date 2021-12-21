@@ -71,3 +71,21 @@ message CalculateRequest {
 message CalculateResponse {
   string price = 1;
 }
+
+//----------Purchase service----------
+service PurchaseService {
+  rpc Purchase(PurchaseRequest) returns (PurchaseResponse) {}
+}
+
+message PurchaseRequest {
+  string user_id = 1;
+  string full_name = 2;
+  string address = 3;
+  string card_num = 4;
+  string cvc = 5;
+  string card_exp = 6;
+}
+
+message PurchaseResponse {
+  string order_id = 1;
+}

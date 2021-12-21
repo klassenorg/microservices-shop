@@ -15,8 +15,8 @@ type Services struct {
 }
 
 type Deps struct {
-	CartClient    *cartclient.CartClient
-	CatalogClient *catalogclient.CatalogClient
+	CartClient    *cartclient.Client
+	CatalogClient *catalogclient.Client
 }
 
 func NewServices(deps Deps) *Services {

@@ -7,12 +7,15 @@ import {observer} from "mobx-react-lite";
 const NavBar = observer(() => {
     const navigate = useNavigate()
     const {cart} = useContext(Context)
+
+    const count = cart.countAll()
+
     return (
         <Navbar bg="dark" variant="dark">
             <Container>
                 <NavLink style={{color: "white"}} to={"/"}>Microservices-shop</NavLink>
                 <Nav className="ml-auto" style={{color:"white"}}>
-                    <Button variant={"outline-light"} onClick={() => navigate("/checkout")}>Cart: {sumValues(cart.cart)} items</Button>
+                    <Button variant={"outline-light"} onClick={() => navigate("/checkout")} disabled={count < 1}>Cart{count > 0 ? `: ${count} items` : " is empty"}</Button>
                 </Nav>
             </Container>
         </Navbar>
@@ -20,9 +23,3 @@ const NavBar = observer(() => {
 });
 
 export default NavBar;
-
-function sumValues(obj){
-    let val
-    Object.keys(obj).length > 0 ? val = Object.values(obj).reduce((a, b) => parseInt(a) + parseInt(b)) : val = 0
-    return val
-}

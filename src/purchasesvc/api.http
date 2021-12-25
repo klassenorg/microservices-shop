@@ -9,6 +9,9 @@ Cookie: USER_ID=1234
   "cvc": "123",
   "exp": "1234"
 }
+###
+GET http://localhost:8085/purchase/v1/1
+Cookie: USER_ID=1234
 
 ###
 //FullName   string `json:"full_name" binding:"required,min=2,max=64"`

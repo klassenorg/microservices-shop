@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import {Button, Form} from "react-bootstrap";
-import Cookies from "universal-cookie";
 import {useNavigate} from "react-router-dom";
+import {observer} from "mobx-react-lite";
+import {postPurchase} from "../http/purchaseAPI";
 
-const CheckoutForm = () => {
-    const cookies = new Cookies()
+const CheckoutForm = observer(() => {
     const navigate = useNavigate()
+
 
     const [email, setEmail] = useState('klassenorg@gmail.com')
     const [phone, setPhone] = useState('+79774164899')
@@ -13,19 +14,17 @@ const CheckoutForm = () => {
     const [city, setCity] = useState('Moscow')
     const [address, setAddress] = useState('ul. Pushkina, d. Kolotushkina, kv. 1')
     const [cardNumber, setCardNumber] = useState('1234123412341234')
-    const [cardExpiration, setCardExpiration] = useState('12/34')
+    const [cardExpiration, setCardExpiration] = useState('1234')
     const [cardCVV, setCardCVV] = useState('123')
 
     const createOrder = async () => {
-        let orderId
+        let data
         try {
-            console.log(cookies.get("USER_ID"), email, phone, name, city, address, cardNumber, cardExpiration, cardCVV)
-            orderId = "123456"
+            data = await postPurchase(email, phone, name, city, address, cardNumber, cardExpiration, cardCVV)
+            navigate("/order/" + data.order_id)
         } catch (e) {
-
+            alert(e.response.data.error)
         }
-
-        navigate("/order/" + orderId)
     }
 
     return (
@@ -93,6 +92,6 @@ const CheckoutForm = () => {
             <Button className={"mt-3"} variant={"outline-success"} onClick={createOrder}>Create order</Button>
         </Form>
     );
-};
+});
 
 export default CheckoutForm;

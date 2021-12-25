@@ -1,17 +1,12 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Button, Card, Col} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
-
-const addToCart = async (id) => {
-
-    try {
-        console.log(`add item ${id} to cart`)
-    } catch (e) {
-        console.log(e)
-    }
-}
+import {Context} from "../index";
 
 const Item = ({item}) => {
+
+    const {cart} = useContext(Context)
+
     const navigate = useNavigate()
     return (
         <Col md={3} sm={6} className={"mt-3"}>
@@ -26,7 +21,7 @@ const Item = ({item}) => {
                         <Button variant="outline-info" onClick={() => navigate("/products/"+item.id)}>See more...</Button>
                     </Col>
                     <Col>
-                        <Button className={"mt-1"} variant="outline-info" onClick={() => addToCart(item.id)}>Add to cart</Button>
+                        <Button className={"mt-1"} variant="outline-info" onClick={() => cart.addToCart(item.id, 1)}>Add to cart</Button>
                     </Col>
                 </Card.Body>
             </Card>

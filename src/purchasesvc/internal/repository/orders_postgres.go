@@ -15,6 +15,16 @@ func NewOrdersRepo(db *sqlx.DB) *OrdersRepo {
 	return &OrdersRepo{db: db}
 }
 
+func (r *OrdersRepo) Get(ctx context.Context, orderID string) (order domain.Order, err error) {
+	row := r.db.QueryRowxContext(ctx, "SELECT id, user_id, full_name, address, total_price FROM orders WHERE id = $1", orderID)
+
+	if err := row.StructScan(&order); err != nil {
+		return domain.Order{}, err
+	}
+
+	return order, nil
+}
+
 func (r *OrdersRepo) Create(ctx context.Context, order domain.Order, items map[string]string) (domain.Order, error) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {

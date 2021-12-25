@@ -17,4 +17,5 @@ func NewRepositories(db *sqlx.DB) *Repositories {
 
 type Orders interface {
 	Create(ctx context.Context, order domain.Order, items map[string]string) (domain.Order, error)
+	Get(ctx context.Context, orderID string) (domain.Order, error)
 }

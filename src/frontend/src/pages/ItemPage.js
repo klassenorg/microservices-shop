@@ -1,25 +1,42 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Button, Card, Col, Container, Image, Row} from "react-bootstrap";
 import Recommendations from "../components/RecommendationsList";
+import {useParams} from "react-router-dom";
+import {Context} from "../index";
+import {fetchOneProduct} from "../http/catalogAPI";
+import {fetchCart} from "../http/cartAPI";
 
 const ItemPage = () => {
-    const item = {"id":100000,"name":"Lemon","description":"The lemon is a round, slightly elongated fruit, it has a strong and resistant skin, with an intense bright yellow colour when it is totaly ripe, giving off a special aroma when it is cut.","price":30,"image_path":"/img/products/100000.jpeg"}
+    const productId = useParams()
+    const {cart} = useContext(Context)
+    const [product, setProduct] = useState({})
+
+    useEffect(() => {
+        fetchCart().then(data =>
+            cart.setCart(data.cart)
+        )
+        fetchOneProduct(productId.id).then(data => setProduct(data))
+        window.scrollTo(0, 0)
+    }, [productId])
+
+
+
         return (
         <Container className={"py-5"}>
             <Row>
                 <Col md={5}>
-                    <Image fluid rounded src={item.image_path}/>
+                    <Image fluid rounded src={product.image_path}/>
                 </Col>
                 <Col>
                     <Card>
                         <Card.Body>
-                            <Card.Title>{item.name}</Card.Title>
-                            <Card.Subtitle>{item.price} $</Card.Subtitle>
+                            <Card.Title>{product.name}</Card.Title>
+                            <Card.Subtitle>{product.price} $</Card.Subtitle>
                             <Card.Text className={"mt-3"}>
-                                {item.description}
+                                {product.description}
                             </Card.Text>
 
-                            <Button variant="outline-success">Add to cart</Button>
+                            <Button variant="outline-success" onClick={() => cart.addToCart(product.id, 1)}>Add to cart</Button>
                         </Card.Body>
                     </Card>
                 </Col>

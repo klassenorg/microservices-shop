@@ -1,9 +1,11 @@
 package v1
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"purchasesvc/internal/domain"
+	"purchasesvc/pkg/paymentclient"
 )
 
 func (h *Handler) initPurchaseRoutes(api *gin.RouterGroup) {
@@ -12,7 +14,25 @@ func (h *Handler) initPurchaseRoutes(api *gin.RouterGroup) {
 	{
 		purchase.Use(h.hasUserIDCookie())
 		purchase.POST("/", h.purchase)
+		purchase.GET("/:id", h.getOrder)
 	}
+}
+
+func (h *Handler) getOrder(c *gin.Context) {
+	orderID := c.Param("id")
+
+	if orderID == "" {
+		h.newBadRequestResponse(c, http.StatusBadRequest, "empty order param")
+		return
+	}
+
+	order, err := h.services.Purchase.GetOrder(c.Request.Context(), orderID)
+	if err != nil {
+		h.newErrorResponse(c, http.StatusInternalServerError, "internal server error", err)
+		return
+	}
+
+	c.JSON(http.StatusOK, order)
 }
 
 type purchaseInput struct {
@@ -43,6 +63,10 @@ func (h *Handler) purchase(c *gin.Context) {
 
 	order, err := h.services.Purchase.CreateOrder(c.Request.Context(), order)
 	if err != nil {
+		if errors.Is(err, paymentclient.ErrCardExpired) || errors.Is(err, paymentclient.ErrNotEnoughMoney) || errors.Is(err, paymentclient.ErrWrongEXP) {
+			h.newBadRequestResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
 		h.newErrorResponse(c, http.StatusInternalServerError, "internal server error", err)
 		return
 	}

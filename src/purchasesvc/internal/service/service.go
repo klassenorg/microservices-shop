@@ -11,6 +11,7 @@ import (
 
 type Purchase interface {
 	CreateOrder(ctx context.Context, order domain.Order) (domain.Order, error)
+	GetOrder(ctx context.Context, orderID string) (domain.Order, error)
 }
 
 type Services struct {

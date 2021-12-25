@@ -51,3 +51,8 @@ func (s *PurchaseService) CreateOrder(ctx context.Context, order domain.Order) (
 
 	return order, nil
 }
+
+func (s *PurchaseService) GetOrder(ctx context.Context, orderID string) (domain.Order, error) {
+	return s.Repos.Orders.Get(ctx, orderID)
+
+}
